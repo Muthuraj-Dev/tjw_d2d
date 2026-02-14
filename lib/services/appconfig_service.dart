@@ -46,7 +46,6 @@ class AppConfigService {
   AppConfig _appConfig = AppConfig(
     appName: "TJW",
     baseApiUrl: "",
-    firebaseNotificationApiKey: "",
   );
 
   String? _packageName;
@@ -79,119 +78,120 @@ class AppConfigService {
 class AppConfig {
   String? appName;
   String? baseApiUrl;
-  String? firebaseNotificationApiKey;
-  Android? android;
-  IOS? iOS;
-  Update? update;
-  List<String>? banners;
-  String? termsAndConditions;
+  bool? isAppActive;
+  AndroidConfig? android;
+  IOSConfig? ios;
+  UpdateConfig? update;
 
-  AppConfig(
-      {this.appName,
-        this.baseApiUrl,
-        this.firebaseNotificationApiKey,
-        this.android,
-        this.iOS,
-        this.update,
-        this.banners,
-        this.termsAndConditions});
+  AppConfig({
+    this.appName,
+    this.baseApiUrl,
+    this.isAppActive,
+    this.android,
+    this.ios,
+    this.update,
+  });
 
-  AppConfig.fromJson(Map<String, dynamic> json) {
-    appName = json['AppName'];
-    baseApiUrl = json['BaseApiUrl'];
-    firebaseNotificationApiKey = json['FirebaseNotificationApiKey'];
-    android = json['Android'] != null ? new Android.fromJson(json['Android']) : null;
-    iOS = json['IOS'] != null ? new IOS.fromJson(json['IOS']) : null;
-    update = json['Update'] != null ? Update.fromJson(json['Update']) : null;
-    banners = json['Banners'].cast<String>();
-    termsAndConditions = json['TermsAndConditions'];
+  factory AppConfig.fromJson(Map<String, dynamic> json) {
+    return AppConfig(
+      appName: json['AppName'],
+      baseApiUrl: json['BaseApiUrl'],
+      isAppActive: json['isAppActive'],
+      android:
+      json['Android'] != null ? AndroidConfig.fromJson(json['Android']) : null,
+      ios: json['IOS'] != null ? IOSConfig.fromJson(json['IOS']) : null,
+      update:
+      json['Update'] != null ? UpdateConfig.fromJson(json['Update']) : null,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['AppName'] = this.appName;
-    data['BaseApiUrl'] = this.baseApiUrl;
-    data['FirebaseNotificationApiKey'] = this.firebaseNotificationApiKey;
-    if (this.android != null) {
-      data['Android'] = this.android!.toJson();
-    }
-    if (this.iOS != null) {
-      data['IOS'] = this.iOS!.toJson();
-    }
-    if (this.update != null) {
-      data['Update'] = this.update!.toJson();
-    }
-    data['Banners'] = this.banners;
-    data['TermsAndConditions'] = this.termsAndConditions;
-    return data;
+    return {
+      'AppName': appName,
+      'BaseApiUrl': baseApiUrl,
+      'isAppActive': isAppActive,
+      'Android': android?.toJson(),
+      'IOS': ios?.toJson(),
+      'Update': update?.toJson(),
+    };
   }
 }
 
-class Android {
-  String? url;
-  String? version;
-  String? appID;
 
-  Android({this.url, this.version, this.appID});
-
-  Android.fromJson(Map<String, dynamic> json) {
-    url = json['Url'];
-    version = json['Version'];
-    appID = json['AppID'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Url'] = this.url;
-    data['Version'] = this.version;
-    data['AppID'] = this.appID;
-    return data;
-  }
-}
-
-class IOS {
+class AndroidConfig {
   String? url;
   String? version;
   String? appId;
 
-  IOS({this.url, this.version, this.appId});
+  AndroidConfig({this.url, this.version, this.appId});
 
-  IOS.fromJson(Map<String, dynamic> json) {
-    url = json['Url'];
-    version = json['Version'];
-    appId = json['AppId'];
+  factory AndroidConfig.fromJson(Map<String, dynamic> json) {
+    return AndroidConfig(
+      url: json['Url'],
+      version: json['Version'],
+      appId: json['AppID'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Url'] = this.url;
-    data['Version'] = this.version;
-    data['AppId'] = this.appId;
-    return data;
+    return {
+      'Url': url,
+      'Version': version,
+      'AppID': appId,
+    };
   }
 }
 
-class Update {
+
+class IOSConfig {
+  String? url;
+  String? version;
+  String? appId;
+
+  IOSConfig({this.url, this.version, this.appId});
+
+  factory IOSConfig.fromJson(Map<String, dynamic> json) {
+    return IOSConfig(
+      url: json['Url'],
+      version: json['Version'],
+      appId: json['AppId'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Url': url,
+      'Version': version,
+      'AppId': appId,
+    };
+  }
+}
+
+
+class UpdateConfig {
   String? title;
   String? subtitle;
   bool? forceUpdate;
 
-  Update({this.title, this.subtitle, this.forceUpdate});
+  UpdateConfig({this.title, this.subtitle, this.forceUpdate});
 
-  Update.fromJson(Map<String, dynamic> json) {
-    title = json['Title'];
-    subtitle = json['Subtitle'];
-    forceUpdate = json['ForceUpdate'];
+  factory UpdateConfig.fromJson(Map<String, dynamic> json) {
+    return UpdateConfig(
+      title: json['Title'],
+      subtitle: json['Subtitle'],
+      forceUpdate: json['ForceUpdate'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Title'] = this.title;
-    data['Subtitle'] = this.subtitle;
-    data['ForceUpdate'] = this.forceUpdate;
-    return data;
+    return {
+      'Title': title,
+      'Subtitle': subtitle,
+      'ForceUpdate': forceUpdate,
+    };
   }
 }
+
 
 
 

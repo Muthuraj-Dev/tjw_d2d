@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:tjwd2d/services/appconfig_service.dart';
 import 'package:tjwd2d/services/navigator_service.dart';
 import 'package:tjwd2d/services/network_service.dart';
+import 'package:tjwd2d/services/session_service.dart';
 import 'package:tjwd2d/services/token_manager.dart';
 
 
@@ -15,5 +16,6 @@ void setupLocator() {
   locator.registerLazySingleton(() => NetworkService());
   locator.registerLazySingleton<AppConfigService>(() => AppConfigService());
   locator.registerLazySingleton(() => NavigationService());
+  locator.registerLazySingleton(() => SessionService());
   locator.registerLazySingleton(() => TokenManager());
 }

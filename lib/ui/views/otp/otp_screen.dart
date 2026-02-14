@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:pinput/pinput.dart';
@@ -19,7 +20,6 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-
   final OtpController controller = Get.find<OtpController>();
 
   @override
@@ -50,11 +50,14 @@ class _OtpScreenState extends State<OtpScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: UISpacing.h(context, 0.12)),
+                        // logo top space
+                        Center(
+                          child: SvgPicture.asset("assets/tjwd2d_Logo.svg"),
+                        ),
+                        SizedBox(height: UISpacing.h(context, 0.08)),
 
-                        SizedBox(height: UISpacing.h(context, 0.12)), // logo top space
-                        Center(child: SvgPicture.asset("assets/tjwd2d_Logo.svg")),
-                        SizedBox(height: UISpacing.h(context, 0.08)), // logo → title
-
+                        // logo → title
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Text(
@@ -69,7 +72,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Text(
-                            "We sent it to the number - 949995****",
+                            "We sent it to the number - ${controller.mobileNumber}",
                             style: const TextStyle(
                               fontSize: 14,
                               color: AppColor.textPrimary,
@@ -92,7 +95,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               return null;
                             },
                             errorTextStyle: TextStyle(
-                              color: Colors.orangeAccent,
+                              color: Colors.red,
                             ),
                             defaultPinTheme: PinTheme(
                               width: 70,
@@ -166,32 +169,43 @@ class _OtpScreenState extends State<OtpScreen> {
           child: Row(
             children: [
               Expanded(
-                child: CommonButton(
-                  fillColor: AppColor.white,
-                  isOutlined: true,
-                  textColor: AppColor.primary,
-                  text: "Resend",
-                  onPressed: (){
-                    controller.verifyOtp(
-                      otpId: controller.otpId.value,
-                      enteredOtp: int.parse(controller.otpController.text),
-                    );
-                  },
-                  isLoading: controller.isLoading.value,
-                ),
+                child: Obx((){
+                  return CommonButton(
+                    fillColor: AppColor.white,
+                    isOutlined: true,
+                    textColor: AppColor.primary,
+                    text: "Resend",
+                    onPressed: () {
+                      if (!controller.formKey.currentState!.validate()) {
+                        return;
+                      }
+                      controller.verifyOtp(
+                        otpId: controller.otpId.value,
+                        enteredOtp: int.parse(controller.otpController.text),
+                      );
+                    },
+                    isLoading: controller.isLoading.value,
+                  );
+                })
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: CommonButton(
-                  text: "Continue",
-                  onPressed: (){
-                   controller.verifyOtp(
-                      otpId: controller.otpId.value,
-                      enteredOtp: int.parse(controller.otpController.text),
-                    );
-                  },
-                  isLoading: controller.isLoading.value,
-                ),
+                child: Obx((){
+                  return  CommonButton(
+                    text: "Continue",
+                    onPressed: () {
+                      if (!controller.formKey.currentState!.validate()) {
+                        return;
+                      }
+                      controller.verifyOtp(
+                        otpId: controller.otpId.value,
+                        enteredOtp: int.parse(controller.otpController.text),
+                      );
+                    },
+                    isLoading: controller.isLoading.value,
+                  );
+                })
+
               ),
             ],
           ),

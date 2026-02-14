@@ -50,7 +50,20 @@ class PhoneController extends GetxController {
         final otpId = response['data']['otpId'];
 
         // Get.toNamed('/otp');
-        Get.toNamed('/otp', arguments: otpId);
+        // Get.toNamed('/otp', arguments: otpId);
+
+        Get.toNamed(
+          '/otp',
+          arguments: {
+            'otpId': otpId,
+            'mobileNumber': mobileNumber,
+          },
+        );
+
+      }
+
+      if(response['status'] == "100"){
+        Fluttertoast.showToast(msg: response['message']);
       }
 
       //    Get.toNamed('/otp');

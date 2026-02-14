@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
@@ -8,7 +9,10 @@ import 'package:tjwd2d/common_widget/common_text_field.dart';
 import 'package:tjwd2d/ui/views/visitor_search/visitor_search_controller.dart';
 
 import '../../../common_widget/common_button.dart';
+import '../../../common_widget/common_dropdown.dart';
 import '../../../core/res/colors.dart';
+import '../../../locator.dart';
+import '../../../services/session_service.dart';
 import '../visitor_detail/visitor_detail_screen.dart';
 
 class VisitorSearchScreen extends StatefulWidget {
@@ -21,57 +25,201 @@ class VisitorSearchScreen extends StatefulWidget {
 class _VisitorSearchScreenState extends State<VisitorSearchScreen> {
   final VisitorSearchController controller = Get.put(VisitorSearchController());
 
+  final formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
-    controller.selectedValue.value = "visitor_name";
+    controller.selectedValue.value = "Search by GST";
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Color(0xffEFF2FF),
+        title: SvgPicture.asset("assets/tjwd2d_Logo.svg", height: 40),
+        actions: [
+          InkWell(
+            onTap: () async {
+              await locator<SessionService>().clearSession();
+            },
+            child: Row(
+              children: [
+                Icon(Icons.logout),
+                SizedBox(width: 6),
+                Text(
+                  "Logout",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: AppColor.primary,
+                  ),
+                ),
+                SizedBox(width: 10),
+              ],
+            ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 78),
-            Text(
-              "Search For Visitor",
-              style: TextStyle(fontSize: 22, color: AppColor.textPrimary),
-            ),
-            SizedBox(height: 20),
-            CommonTextField(
-              controller: controller.searchVisitorController,
-              focusNode: controller.searchVisitorFocusNode,
-              hintText: "Search for visitor",
-              // prefixIcon: Icon(Icons.search),
-              suffixIcon: Icon(Icons.search),
-            ),
-            SizedBox(height: 12),
-            Obx(() {
-              return Column(
-                children: [
-                  radioTile("visitor_name", "Visitor Name"),
-                  radioTile("company_gstn", "Company GSTN"),
-                  radioTile("company_name", "Company Name"),
-                  radioTile("mobile_number", "Mobile Number"),
+        child: Form (
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //     SizedBox(height: 78),
+              Text(
+                "Search For Visitor",
+                style: TextStyle(fontSize: 22, color: AppColor.textPrimary),
+              ),
+              SizedBox(height: 20),
+              CommonDropdown<String>(
+                items: const [
+                  'Search by GST',
+                  'Search by Mobile Number',
+                  'Search by Name',
+                  'Search by Company Name',
                 ],
-              );
-            }),
-          ],
+                hintText: 'Select',
+                selectedItem: controller.selectedValue.value.isNotEmpty
+                    ? controller.selectedValue.value
+                    : null,
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.onSearchTypeChanged(value);
+                  }
+                  // 🔥 Clear all validation errors
+                 formKey.currentState?.reset();
+                },
+                validator: (val) {
+                  if (val == null || val.isEmpty) {
+                    return 'Please select search type';
+                  }
+                  return null;
+                },
+              ),
+
+              SizedBox(height: 20),
+
+              Obx(() {
+                switch (controller.selectedValue.value) {
+                  case 'Search by GST':
+                    return CommonTextField(
+                      controller: controller.searchGstController,
+                      focusNode: controller.searchGstFocusNode,
+                      hintText: 'Enter GST Number',
+                      suffixIcon: const Icon(Icons.search),
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Please enter GST';
+                        }
+                        return null;
+                      },
+                    );
+
+                  case 'Search by Mobile Number':
+                    return CommonTextField.phone(
+                      controller: controller.searchMobileNumberController,
+                      focusNode: controller.searchMobileNumberFocusNode,
+                      hintText: 'Enter Mobile Number',
+                      suffixIcon: const Icon(Icons.search),
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Please enter mobile number';
+                        }
+                        return null;
+                      },
+                    );
+
+                  case 'Search by Name':
+                    return Column(
+                      children: [
+                        CommonTextField(
+                          controller: controller.searchNameController,
+                          focusNode: controller.searchNameFocusNode,
+                          hintText: 'Enter Name',
+                          suffixIcon: const Icon(Icons.search),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        CommonTextField(
+                          controller: controller.searchCityController,
+                          focusNode: controller.searchCityFocusNode,
+                          hintText: 'Enter City',
+                          suffixIcon: const Icon(Icons.search),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter city';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    );
+
+                  case 'Search by Company Name':
+                    return Column(
+                      children: [
+                        CommonTextField(
+                          controller: controller.searchCompanyNameController,
+                          focusNode: controller.searchCompanyNameFocusNode,
+                          hintText: 'Enter Company Name',
+                          suffixIcon: const Icon(Icons.search),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter company name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        CommonTextField(
+                          controller: controller.searchCityController,
+                          focusNode: controller.searchCityFocusNode,
+                          hintText: 'Enter City',
+                          suffixIcon: const Icon(Icons.search),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter city';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    );
+
+                  default:
+                    return const SizedBox.shrink();
+                }
+              }),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: CommonButton(
-            text: "Search",
-            onPressed: () {
-              Get.to(() => VisitorDetailScreen());
-            },
-            isLoading: controller.isLoading.value,
-          ),
+          child: Obx(() {
+            return CommonButton(
+              text: "Search",
+              onPressed: () {
+                if (formKey.currentState?.validate() != true) {
+                  print('Form is invalid. Please correct the errors.');
+                  return;
+                }
+                controller.searchApiCall();
+              },
+              isLoading: controller.isLoading.value,
+            );
+          }),
         ),
       ),
     );

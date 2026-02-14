@@ -222,41 +222,41 @@ class _CommonTextFieldState extends State<CommonTextField> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
         hintText: widget.hintText ?? "",
-        hintStyle: TextStyle(fontSize: 14, color: Color(0xff737373A8)),
+        hintStyle: TextStyle(fontSize: 16, color: Color(0xff737373A8)),
         fillColor:
             widget.fillColor ??
             (widget.enabled ? AppColor.white : Colors.grey.shade200),
         filled: true,
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
+          vertical: 14,
           horizontal: 12,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(14.0),
           borderSide: BorderSide(
             color: widget.borderColor ?? AppColor.primary,
             width: 1.5,
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(14.0),
           borderSide: BorderSide(
             color: widget.borderColor ?? AppColor.primary,
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(14.0),
           borderSide: BorderSide(
             color: widget.focusedBorderColor ?? AppColor.primary,
             width: 1,
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(14.0),
           borderSide: BorderSide(
-            color: widget.errorBorderColor ?? Colors.red.shade50,
-            width: 1,
+            color: widget.errorBorderColor ?? Colors.red,
+            width: 1.5,
           ),
         ),
 
@@ -296,6 +296,6 @@ class _CommonTextFieldState extends State<CommonTextField> {
 
   TextStyle defaultTextStyle = const TextStyle(
     color: AppColor.textPrimary,
-    fontSize: 15,
+    fontSize: 18,
   );
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "405004666447",
+    "project_id": "tjw-d2d",
+    "storage_bucket": "tjw-d2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405004666447:android:82b1952f30b61efab1cc3a",
+        "android_client_info": {
+          "package_name": "com.tjwd2d.app.tjwd2d"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrtg4VBhVN9_QpN31LFfvPKfPTVlgWXGo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

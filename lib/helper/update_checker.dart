@@ -22,14 +22,14 @@ class UpdateChecker {
       final String version =
           Platform.isAndroid
               ? appConfig.android?.version ?? ''
-              : appConfig.iOS?.version ?? '';
+              : appConfig.ios?.version ?? '';
 
       final String url =
           Platform.isAndroid
               ? appConfig.android?.url ?? ''
-              : appConfig.iOS?.url ?? '';
+              : appConfig.ios?.url ?? '';
 
-      final Update? update = appConfig.update;
+      final UpdateConfig? update = appConfig.update;
 
       if (version.isEmpty || url.isEmpty) return;
 

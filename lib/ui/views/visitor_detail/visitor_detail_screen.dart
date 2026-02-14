@@ -13,6 +13,8 @@ import 'package:tjwd2d/core/res/colors.dart';
 import 'package:tjwd2d/ui/views/visitor_detail/visitor_detail_controller.dart';
 
 import '../../../common_widget/common_dropdown.dart';
+import '../../../locator.dart';
+import '../../../services/session_service.dart';
 import '../payment_mode/payment_method.dart';
 
 class VisitorDetailScreen extends StatefulWidget {
@@ -25,24 +27,54 @@ class VisitorDetailScreen extends StatefulWidget {
 class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
   final VisitorDetailController controller = Get.put(VisitorDetailController());
 
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // resizeToAvoidBottomInset: true,
       backgroundColor: AppColor.white,
       appBar: AppBar(
-        backgroundColor: AppColor.white,
-        leading: const BackButton(
-          color: AppColor.black,
-        ), // optional, but explicit
+        elevation: 0,
+        backgroundColor: Color(0xffEFF2FF),
+        title: const Text('Visitor Details'),
+        // SvgPicture.asset("assets/tjwd2d_Logo.svg", height: 40),
+        actions: [
+          InkWell(
+            onTap: () async {
+              await locator<SessionService>().clearSession();
+            },
+            child: Row(
+              children: [
+                Icon(Icons.logout),
+                SizedBox(width: 6),
+                Text(
+                  "Logout",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: AppColor.primary,
+                  ),
+                ),
+                SizedBox(width: 26),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           controller: controller.scrollController,
+          // padding: EdgeInsets.only(
+          //   bottom: MediaQuery.of(context).viewInsets.bottom > 0
+          //       ? MediaQuery.of(context).viewInsets.bottom + 140
+          //       : 140,
+          // ),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              children: List.generate(6, (index) {
-                return Padding(
+              children: [
+                Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Container(
                     padding: const EdgeInsets.all(8),
@@ -54,27 +86,29 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Container(
-                          padding: EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Color(0xffD8E9FF),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              SvgPicture.asset("assets/user_id.svg"),
-                              SizedBox(width: 10),
-                              Text(
-                                'Registration ID ${index} : GF25-TV20097',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.textPrimary,
+                        if ((controller.visitor.registrationID ?? '')
+                            .isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Color(0xffD8E9FF),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset("assets/user_id.svg"),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Registration ID: ${controller.visitor.registrationID ?? '-'}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.textPrimary,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                         SizedBox(height: 8),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +118,7 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Jonathan Emmanuel Rayappan',
+                                    controller.visitor.visitorName ?? '-',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -92,8 +126,18 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                                     ),
                                   ),
                                   SizedBox(height: 4),
+                                  if ((controller.visitor.gstN ?? '')
+                                      .isNotEmpty)
+                                    Text(
+                                      'GSTN: ${controller.visitor.gstN}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xff4B4B4B),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   Text(
-                                    'GSTN: 11GJIIF1234XIZ1',
+                                    controller.visitor.mobileNumber ?? '-',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Color(0xff4B4B4B),
@@ -101,15 +145,7 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '8888777700',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xff4B4B4B),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Text(
-                                    'ID: 8243',
+                                    'ID: ${controller.visitor.visitorID ?? '-'}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -123,16 +159,17 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: CachedNetworkImage(
+                                imageUrl: controller.visitor.photoURL ?? '',
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,
-                                imageUrl:
-                                    'https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341',
                                 placeholder: (_, __) => const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                                  width: 20,
+                                  height: 20,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   ),
                                 ),
                                 errorWidget: (_, __, ___) =>
@@ -151,14 +188,16 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'G-123, 1st Floor, 5th St, G Block, Annanagar East, Chennai, Tamil Nadu 600102',
-                          style: TextStyle(
+                        Text(
+                          '${controller.visitor.address ?? ''}'
+                          '${controller.visitor.city != null ? ', ${controller.visitor.city}' : ''}'
+                          '${controller.visitor.pincode != null ? ' - ${controller.visitor.pincode}' : ''}',
+                          style: const TextStyle(
                             fontSize: 14,
-                            color: AppColor.textPrimary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+
                         const SizedBox(height: 8),
                         const Divider(color: Color(0xffB4B4B4)),
                         const SizedBox(height: 8),
@@ -168,16 +207,20 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                               child: CommonDropdown<String>(
                                 items: const [
                                   'Paid',
-                                  'Registered',
                                   'Complimentary',
                                   'Unpaid',
+                                  'Rejected',
                                 ],
                                 hintText: 'Select',
                                 selectedItem:
                                     controller.statusController.text.isNotEmpty
                                     ? controller.statusController.text
                                     : null,
-                                onChanged: (value) {},
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    controller.onStatusChanged(value);
+                                  }
+                                },
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
                                     return 'Please select branch';
@@ -186,38 +229,90 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                                 },
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            SizedBox(
-                              width: 150,
-                              child: CommonButton(
-                                text: 'Save',
-                                borderRadius: BorderRadius.circular(8),
-                                onPressed: () {
-                                  controller.lastScrollOffset =
-                                      controller.scrollController.offset;
-
-                                  Get.to(() => PaymentMethod());
-
-                                  // Restore scroll when coming back
-                                  WidgetsBinding.instance.addPostFrameCallback((_,) {
-                                    controller.scrollController.jumpTo(
-                                      controller.lastScrollOffset,
-                                    );
-                                  });
-                                },
-                              ),
-                            ),
                           ],
                         ),
+
+                        // Payment Method Option - Display for only like - PAID / COMPLIMENTARY
+                        Obx(() {
+                          final status = controller.selectedStatus.value;
+
+                          // ❌ Hide for UNPAID / REJECTED
+                          if (status != 3) {  //  && status != 6
+                            return const SizedBox.shrink();
+                          }
+
+                          // ✅ Show only for PAID / COMPLIMENTARY
+                          return Form(
+                            key: formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 16),
+                                Divider(),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "Payment Method",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColor.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+
+                                radioTile("cash", "Cash"),
+                                radioTile("upi", "UPI"),
+                              ],
+                            ),
+                          );
+                        }),
                       ],
                     ),
                   ),
-                );
-              }),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
         ),
       ),
+      bottomNavigationBar: Obx(() {
+        final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            bottom: bottomInset > 0 ? bottomInset + 12 : 20,
+            top: 12,
+          ),
+          child: SafeArea(
+            top: false,
+            child: CommonButton(
+              text: "Submit",
+              isLoading: controller.isLoading.value,
+              onPressed: () {
+                final status = controller.selectedStatus.value;
+
+                // 🔴 UNPAID / REJECTED / COMPLIMENTARY
+                if (status == 0 || status == -1 || status == 6) {
+                  controller.submitWithoutPayment();
+                  return;
+                }
+
+                // 🟢 PAID
+                if (!controller.validatePayment(formkey: formKey)) {
+                  return;
+                }
+
+                controller.submit();
+              },
+            ),
+          ),
+        );
+      }),
     );
   }
 
@@ -241,6 +336,13 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
               groupValue: controller.selectedValue.value,
               onChanged: (val) {
                 controller.selectedValue.value = val!;
+
+                if (val == 'cash') {
+                  controller.upiAmountController.clear();
+                  controller.referenceIdController.clear();
+                } else {
+                  controller.cashAmountController.clear();
+                }
               },
               title: Text(label),
             ),
@@ -255,6 +357,18 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                   hintText: "Enter cash amount",
                   keyboardType: TextInputType.number,
                   focusNode: controller.cashFocusNode,
+                  validator: (value) {
+                    if (controller.selectedValue.value != 'cash') {
+                      return null; // ❗ skip validation
+                    }
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Cash amount is required';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Enter a valid amount';
+                    }
+                    return null;
+                  },
                 ),
               ),
             ],
@@ -264,24 +378,54 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColor.primary),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Image.network(
-                    "https://storage.googleapis.com/dara-c1b52.appspot.com/daras_ai/media/a3202e58-17ef-11ee-9a70-8e93953183bb/cleaned_qr.png",
-                  ),
-                  //   SvgPicture.asset("assets/tjwd2d_Logo.svg"),
+                  child: Image.asset("assets/qr_code.jpeg",width: 200,height: 200,),
                 ),
               ),
               const SizedBox(height: 12),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: CommonTextField(
+                  controller: controller.upiAmountController,
+                  hintText: "Enter Cash Amount",
+                  focusNode: controller.upiAmountFocusNode,
+                  validator: (value) {
+                    if (controller.selectedValue.value != 'upi') {
+                      return null;
+                    }
+                    if (value == null || value.trim().isEmpty) {
+                      return 'UPI amount is required';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Enter a valid amount';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: CommonTextField(
+                  key: controller.referenceFieldKey,
                   controller: controller.referenceIdController,
-                  hintText: "Enter UPI reference ID",
+                  hintText: "Enter UPI Reference ID",
                   focusNode: controller.referenceIdFocusNode,
+                  validator: (value) {
+                    if (controller.selectedValue.value != 'upi') {
+                      return null;
+                    }
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Reference ID is required';
+                    }
+                    if (value.length < 6) {
+                      return 'Invalid reference ID';
+                    }
+                    return null;
+                  },
                 ),
               ),
             ],
@@ -291,67 +435,3 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
     });
   }
 }
-
-// CommonDialog.showCustomDialog(
-//   borderRadius: 26.0,
-//   content: Padding(
-//     padding: const EdgeInsets.all(
-//       28.0,
-//     ),
-//     child: Column(
-//       mainAxisSize:
-//           MainAxisSize.min,
-//       children: [
-//         Text(
-//           "Updated",
-//           style: TextStyle(
-//             fontSize: 28,
-//             color: AppColor
-//                 .textPrimary,
-//             fontWeight:
-//                 FontWeight.w600,
-//           ),
-//         ),
-//         SizedBox(height: 6),
-//         Container(
-//           padding: EdgeInsets.all(14),
-//           decoration: BoxDecoration(
-//             color: Color(0xffD8E9FF),
-//             borderRadius: BorderRadius.circular(8),
-//           ),
-//           child:   Row(
-//             children: [
-//               SvgPicture.asset("assets/user_id.svg"),
-//               SizedBox(width: 10,),
-//               Text(
-//                 'Registration ID : GF25-TV20097',
-//                 style: TextStyle(
-//                   fontSize: 14,
-//                   fontWeight: FontWeight.bold,
-//                   color: AppColor.textPrimary,
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//         SizedBox(height: 6),
-//         Text(
-//           "Your data has been saved",
-//           style: TextStyle(
-//             fontSize: 14,
-//             color: Color(
-//               0xff6B6B6B,
-//             ),
-//           ),
-//         ),
-//         SizedBox(height: 26),
-//         CommonButton(
-//           text: "Close",
-//           onPressed: () {
-//             Get.back();
-//           },
-//         ),
-//       ],
-//     ),
-//   ),
-// );

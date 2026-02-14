@@ -12,6 +12,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:tjwd2d/router.dart';
 import 'package:tjwd2d/services/network_service.dart';
 import 'core/res/styles.dart';
+import 'firebase_options_prod.dart';
 import 'locator.dart';
 
 Future<void> main() async {
@@ -19,9 +20,12 @@ Future<void> main() async {
 
   setupLocator();
 
-
   // Init network service (after config is set)
   locator<NetworkService>().onInit();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Run the app
    runApp(MyApp());

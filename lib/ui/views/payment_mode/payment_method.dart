@@ -47,97 +47,102 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   radioTile("cash", "Cash"),
                   radioTile("upi", "UPI"),
                   SizedBox(height: 26),
-                  CommonButton(
-                    text: "Submit",
-                    onPressed: () {
-                     Get.back();
-        
-                      CommonDialog.showCustomDialog(
-                        borderRadius: 26.0,
-                        content: AnimatedPadding(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeOut,
-                          padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(
-                              Get.context!,
-                            ).viewInsets.bottom,
-                          ),
-                          child: SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxHeight:
-                                    MediaQuery.of(Get.context!).size.height *
-                                    0.8,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(28.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "Updated",
-                                      style: TextStyle(
-                                        fontSize: 28,
-                                        color: AppColor.textPrimary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-        
-                                    Container(
-                                      padding: const EdgeInsets.all(14),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xffD8E9FF),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            "assets/user_id.svg",
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              'Registration ID : GF25-TV20097',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColor.textPrimary,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-        
-                                    const SizedBox(height: 6),
-        
-                                    Text(
-                                      "Your data has been saved",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xff6B6B6B),
-                                      ),
-                                    ),
-        
-                                    const SizedBox(height: 26),
-        
-                                    CommonButton(
-                                      text: "Close",
-                                      onPressed: () {
-                                        Get.back();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  Obx((){
+                    return   CommonButton(
+                      text: "Submit",
+                      isLoading: controller.isLoading.value,
+                      onPressed: () {
+                        controller.submit();
+                        // Get.back();
+                        //
+                        //  CommonDialog.showCustomDialog(
+                        //    borderRadius: 26.0,
+                        //    content: AnimatedPadding(
+                        //      duration: const Duration(milliseconds: 200),
+                        //      curve: Curves.easeOut,
+                        //      padding: EdgeInsets.only(
+                        //        bottom: MediaQuery.of(
+                        //          Get.context!,
+                        //        ).viewInsets.bottom,
+                        //      ),
+                        //      child: SingleChildScrollView(
+                        //        physics: const BouncingScrollPhysics(),
+                        //        child: ConstrainedBox(
+                        //          constraints: BoxConstraints(
+                        //            maxHeight:
+                        //                MediaQuery.of(Get.context!).size.height *
+                        //                0.8,
+                        //          ),
+                        //          child: Padding(
+                        //            padding: const EdgeInsets.all(28.0),
+                        //            child: Column(
+                        //              mainAxisSize: MainAxisSize.min,
+                        //              children: [
+                        //                Text(
+                        //                  "Updated",
+                        //                  style: TextStyle(
+                        //                    fontSize: 28,
+                        //                    color: AppColor.textPrimary,
+                        //                    fontWeight: FontWeight.w600,
+                        //                  ),
+                        //                ),
+                        //                const SizedBox(height: 6),
+                        //
+                        //                Container(
+                        //                  padding: const EdgeInsets.all(14),
+                        //                  decoration: BoxDecoration(
+                        //                    color: const Color(0xffD8E9FF),
+                        //                    borderRadius: BorderRadius.circular(8),
+                        //                  ),
+                        //                  child: Row(
+                        //                    children: [
+                        //                      SvgPicture.asset(
+                        //                        "assets/user_id.svg",
+                        //                      ),
+                        //                      const SizedBox(width: 10),
+                        //                      Expanded(
+                        //                        child: Text(
+                        //                          'Registration ID : GF25-TV20097',
+                        //                          style: TextStyle(
+                        //                            fontSize: 14,
+                        //                            fontWeight: FontWeight.bold,
+                        //                            color: AppColor.textPrimary,
+                        //                          ),
+                        //                        ),
+                        //                      ),
+                        //                    ],
+                        //                  ),
+                        //                ),
+                        //
+                        //                const SizedBox(height: 6),
+                        //
+                        //                Text(
+                        //                  "Your data has been saved",
+                        //                  style: TextStyle(
+                        //                    fontSize: 14,
+                        //                    color: Color(0xff6B6B6B),
+                        //                  ),
+                        //                ),
+                        //
+                        //                const SizedBox(height: 26),
+                        //
+                        //                CommonButton(
+                        //                  text: "Close",
+                        //                  onPressed: () {
+                        //                    Get.back();
+                        //                  },
+                        //                ),
+                        //              ],
+                        //            ),
+                        //          ),
+                        //        ),
+                        //      ),
+                        //    ),
+                        //  );
+                      },
+                    );
+                  })
+
                 ],
               ),
             ),
@@ -167,6 +172,13 @@ class _PaymentMethodState extends State<PaymentMethod> {
               groupValue: controller.selectedValue.value,
               onChanged: (val) {
                 controller.selectedValue.value = val!;
+
+                if (val == 'cash') {
+                  controller.upiAmountController.clear();
+                  controller.referenceIdController.clear();
+                } else {
+                  controller.cashAmountController.clear();
+                }
               },
               title: Text(label),
             ),
@@ -205,8 +217,17 @@ class _PaymentMethodState extends State<PaymentMethod> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: CommonTextField(
+                  controller: controller.upiAmountController,
+                  hintText: "Enter Cash Amount",
+                  focusNode: controller.upiAmountFocusNode,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: CommonTextField(
                   controller: controller.referenceIdController,
-                  hintText: "Enter UPI reference ID",
+                  hintText: "Enter UPI Reference ID",
                   focusNode: controller.referenceIdFocusNode,
                 ),
               ),

@@ -12,6 +12,10 @@ import 'package:tjwd2d/ui/views/phone/phone_screen.dart';
 import 'package:tjwd2d/ui/views/splash/splash_binding.dart';
 import 'package:tjwd2d/ui/views/splash/splash_controller.dart';
 import 'package:tjwd2d/ui/views/splash/splash_screen.dart';
+import 'package:tjwd2d/ui/views/visitor_detail/visitor_detail_screen.dart';
+import 'package:tjwd2d/ui/views/visitor_list/visitor_list_binding.dart';
+import 'package:tjwd2d/ui/views/visitor_list/visitor_list_screen.dart';
+import 'package:tjwd2d/ui/views/visitor_search/visitor_search_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -19,7 +23,8 @@ class AppRoutes {
   static const String phoneScreen = '/phone';
   static const String otpScreen = '/otp';
   static const String searchScreen = '/searchScreen';
-  static const String visitorDetailsScreen = '/visitoDetailsScreen';
+  static const String visitorDetailsScreen = '/visitorDetailsScreen';
+  static const String visitorListScreen = '/visitorListScreen';
 
   static final List<GetPage> pages = [
     GetPage(
@@ -39,6 +44,27 @@ class AppRoutes {
       name: otpScreen,
       page: () => const OtpScreen(),
       binding: OtpBinding(),
+      transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: searchScreen,
+      page: () => const VisitorSearchScreen(),
+      binding: OtpBinding(),
+      transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: visitorListScreen,
+      page: () =>  VisitorListScreen(),
+      binding: VisitorListBinding(),
+      transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: visitorDetailsScreen,
+      page: () =>  VisitorDetailScreen(),
+      // binding: VisitorListBinding(),
       transition: Transition.fadeIn,
     ),
 
