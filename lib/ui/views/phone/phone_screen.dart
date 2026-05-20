@@ -182,11 +182,11 @@ class _PhoneScreenState extends State<PhoneScreen> {
     appConfig = locator<AppConfigService>().config;
 
     /// 🔴 Show dialog AFTER first frame
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (appConfig?.isAppActive == false) {
-    //     _showAppInactiveDialog();
-    //   }
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (appConfig?.isAppActive == false) {
+        _showAppInactiveDialog();
+      }
+    });
   }
 
 

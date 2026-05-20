@@ -83,7 +83,7 @@ class VisitorSearchController extends GetxController{
 
       /// 🔹 API call
       final SearchResponse response = await ApiBaseService.request<SearchResponse>(
-        'Search?$query',
+        'SearchVisitor?$query',
         method: RequestMethod.GET,
         authenticated: false,
       );
