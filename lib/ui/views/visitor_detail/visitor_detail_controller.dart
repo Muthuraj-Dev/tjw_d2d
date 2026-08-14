@@ -14,9 +14,6 @@ class VisitorDetailController extends GetxController {
   final TextEditingController statusController = TextEditingController();
   FocusNode statusFocusNode = FocusNode();
 
-
-
-
   RxString selectedValue = "cash".obs;
 
   // Cash
@@ -39,7 +36,6 @@ class VisitorDetailController extends GetxController {
   var isLoading = false.obs;
 
   final referenceFieldKey = GlobalKey();
-
 
   @override
   void onInit() {
@@ -70,7 +66,6 @@ class VisitorDetailController extends GetxController {
         });
       }
     });
-
   }
 
   /// Call this on submit
@@ -96,7 +91,6 @@ class VisitorDetailController extends GetxController {
   /// numeric status for API
 
   final RxInt selectedStatus = (-999).obs; // default invalid
-
 
   void onStatusChanged(String value) {
     statusController.text = value;
@@ -183,32 +177,6 @@ class VisitorDetailController extends GetxController {
                       ),
                       const SizedBox(height: 6),
 
-                      // Container(
-                      //   padding: const EdgeInsets.all(14),
-                      //   decoration: BoxDecoration(
-                      //     color: const Color(0xffD8E9FF),
-                      //     borderRadius: BorderRadius.circular(8),
-                      //   ),
-                      //   child: Row(
-                      //     children: [
-                      //       SvgPicture.asset("assets/user_id.svg"),
-                      //       const SizedBox(width: 10),
-                      //       Expanded(
-                      //         child: Text(
-                      //           'Registration ID : ${visitor.registrationID}',
-                      //           style: TextStyle(
-                      //             fontSize: 14,
-                      //             fontWeight: FontWeight.bold,
-                      //             color: AppColor.textPrimary,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-
-                      const SizedBox(height: 6),
-
                       Text(
                         "Your data has been saved",
                         style: TextStyle(
@@ -222,6 +190,7 @@ class VisitorDetailController extends GetxController {
                       CommonButton(
                         text: "Close",
                         onPressed: () {
+                          print("DDDDD");
                           if (Get.isDialogOpen ?? false) {
                             Get.back(result: true);
                           }
@@ -241,7 +210,7 @@ class VisitorDetailController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', e.toString());
-    } finally{
+    } finally {
       isLoading.value = false;
     }
   }
@@ -257,17 +226,13 @@ class VisitorDetailController extends GetxController {
 
       final String paymentMode = selectedValue.value;
 
-
-      final String amount =
-      selectedValue.value == 'cash'
+      final String amount = selectedValue.value == 'cash'
           ? cashAmountController.text.trim()
           : upiAmountController.text.trim();
 
-      final String referenceId =
-      selectedValue.value == 'upi'
+      final String referenceId = selectedValue.value == 'upi'
           ? referenceIdController.text.trim()
           : '';
-
 
       final String url =
           'Save'
@@ -278,18 +243,16 @@ class VisitorDetailController extends GetxController {
           '&ReferenceID=$referenceId';
 
       final Map<String, dynamic> response =
-      await ApiBaseService.request<Map<String, dynamic>>(
-        url,
-        method: RequestMethod.GET,
-        authenticated: false,
-      );
+          await ApiBaseService.request<Map<String, dynamic>>(
+            url,
+            method: RequestMethod.GET,
+            authenticated: false,
+          );
 
       if (response['status'] == "200") {
         final data = response['data'];
 
-        Fluttertoast.showToast(
-          msg: 'Saved successfully',
-        );
+        Fluttertoast.showToast(msg: 'Saved successfully');
 
         // Optional local update
         visitor.status = data['status'];
@@ -406,5 +369,4 @@ class VisitorDetailController extends GetxController {
       }
     }
   }
-
 }

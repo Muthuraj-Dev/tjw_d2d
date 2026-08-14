@@ -80,7 +80,7 @@ class VisitorListScreen extends StatelessWidget {
                 return const Center(child: Text('No visitors found'));
               }
 
-              if(controller.isLoading.value) {
+              if (controller.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
 

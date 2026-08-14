@@ -28,6 +28,7 @@ class VisitorListController extends GetxController {
     debugPrint('Initial text: "${searchController.text}"');
 
     final args = Get.arguments as Map<String, dynamic>?;
+
     /// Get visitors from previous screen
     // originalVisitors = (args['visitors'] as List).cast<Data>();
     // searchParams = (args['searchParams'] as Map<String, String>);
@@ -104,7 +105,8 @@ class VisitorListController extends GetxController {
 
         return name.contains(query) ||
             city.contains(query) ||
-            mobileNumber.contains(query) || companyName.contains(query);
+            mobileNumber.contains(query) ||
+            companyName.contains(query);
       }).toList(),
     );
   }
@@ -129,33 +131,35 @@ class VisitorListController extends GetxController {
         query = 'VisitorPhoneValue=${searchParams!['mobile']}';
         break;
       case 'Search by Name':
-        query = 'VisitorNameValue=${searchParams!['name']}&CityValue=${searchParams!['city']}';
+        query =
+            'VisitorNameValue=${searchParams!['name']}&CityValue=${searchParams!['city']}';
         break;
       case 'Search by Company Name':
-        query = 'CompanyNameValue=${searchParams!['company']}&CityValue=${searchParams!['city']}';
+        query =
+            'CompanyNameValue=${searchParams!['company']}&CityValue=${searchParams!['city']}';
         break;
     }
 
     try {
-      final SearchResponse response = await ApiBaseService.request<SearchResponse>(
-        'Search?$query',
-        method: RequestMethod.GET,
-        authenticated: false,
-      );
+      final SearchResponse response =
+          await ApiBaseService.request<SearchResponse>(
+            'Search?$query',
+            method: RequestMethod.GET,
+            authenticated: false,
+          );
 
       if (response.status == "200") {
         final searchResponse = SearchResponse.fromJson(response.toJson());
         filteredVisitors.assignAll(searchResponse.data ?? []);
         originalVisitors.assignAll(searchResponse.data ?? []);
-
       } else {
         originalVisitors.clear();
         filteredVisitors.clear();
         Fluttertoast.showToast(msg: 'No data found for search parameters');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Unable to fetch visitors');
-    } finally{
+      //    Get.snackbar('Error', 'Unable to fetch visitors');
+    } finally {
       isLoading.value = false;
     }
   }
@@ -179,5 +183,4 @@ class VisitorListController extends GetxController {
   void onBackFromDetails() {
     Get.back(result: true); // bubble signal up to search page
   }
-
 }

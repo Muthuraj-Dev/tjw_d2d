@@ -68,9 +68,11 @@ class CommonTextField extends StatefulWidget {
     this.errorBorderColor,
     this.errorTextColor,
     this.onTap,
+    List<TextInputFormatter>? extraInputFormatters,
   }) : inputFormatters = [
          FilteringTextInputFormatter.deny(RegExp("[ ]{2}")),
          FilteringTextInputFormatter.deny(RegExp("^[\\ ]{0,1}")),
+         ...?extraInputFormatters,
        ];
 
   // Named constructor for email
@@ -298,4 +300,17 @@ class _CommonTextFieldState extends State<CommonTextField> {
     color: AppColor.textPrimary,
     fontSize: 18,
   );
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
 }

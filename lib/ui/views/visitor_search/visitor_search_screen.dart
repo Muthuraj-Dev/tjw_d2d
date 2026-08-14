@@ -112,6 +112,8 @@ class _VisitorSearchScreenState extends State<VisitorSearchScreen> {
                       focusNode: controller.searchGstFocusNode,
                       hintText: 'Enter GST Number',
                       suffixIcon: const Icon(Icons.search),
+                      textCapitalization: TextCapitalization.characters,
+                      extraInputFormatters: [UpperCaseTextFormatter()],
                       validator: (val) {
                         if (val == null || val.isEmpty) {
                           return 'Please enter GST';
