@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tjwd2d.app.tjwd2d"
+    namespace = "com.tjw.tjwd2d"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.tjwd2d.app.tjwd2d"
+        applicationId = "com.tjw.tjwd2d"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

@@ -1,4 +1,4 @@
-package com.tjwd2d.app.tjwd2d
+package com.tjw.tjwd2d
 
 import io.flutter.embedding.android.FlutterActivity
 
