@@ -1,8 +1,6 @@
 
 import 'dart:convert';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +10,6 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:tjwd2d/router.dart';
 import 'package:tjwd2d/services/network_service.dart';
 import 'core/res/styles.dart';
-import 'firebase_options_prod.dart';
 import 'locator.dart';
 
 Future<void> main() async {
@@ -22,10 +19,6 @@ Future<void> main() async {
 
   // Init network service (after config is set)
   locator<NetworkService>().onInit();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   // Run the app
    runApp(MyApp());

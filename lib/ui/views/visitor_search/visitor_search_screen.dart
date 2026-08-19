@@ -64,182 +64,206 @@ class _VisitorSearchScreenState extends State<VisitorSearchScreen> {
           ),
         ],
       ),
-      body: TapOutsideUnFocus(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //     SizedBox(height: 78),
-                Text(
-                  "Search For Visitor",
-                  style: TextStyle(fontSize: 22, color: AppColor.textPrimary),
-                ),
-                SizedBox(height: 20),
-                CommonDropdown<String>(
-                  items: const [
-                    'Search by GST',
-                    'Search by Mobile Number',
-                    'Search by Name',
-                    'Search by Company Name',
+      body: Stack(
+        children: [
+          TapOutsideUnFocus(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 90),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //     SizedBox(height: 78),
+                    Text(
+                      "Search For Visitor",
+                      style: TextStyle(
+                        fontSize: 22,
+                        color: AppColor.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    CommonDropdown<String>(
+                      items: const [
+                        'Search by GST',
+                        'Search by Mobile Number',
+                        'Search by Name',
+                        'Search by Company Name',
+                      ],
+                      hintText: 'Select',
+                      selectedItem: controller.selectedValue.value.isNotEmpty
+                          ? controller.selectedValue.value
+                          : null,
+                      onChanged: (value) {
+                        if (value != null) {
+                          controller.onSearchTypeChanged(value);
+                        }
+                        // 🔥 Clear all validation errors
+                        formKey.currentState?.reset();
+                      },
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Please select search type';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    SizedBox(height: 20),
+
+                    Obx(() {
+                      switch (controller.selectedValue.value) {
+                        case 'Search by GST':
+                          return CommonTextField(
+                            controller: controller.searchGstController,
+                            focusNode: controller.searchGstFocusNode,
+                            hintText: 'Enter GST Number',
+                            suffixIcon: const Icon(Icons.search),
+                            textCapitalization: TextCapitalization.characters,
+                            extraInputFormatters: [UpperCaseTextFormatter()],
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Please enter GST';
+                              }
+                              return null;
+                            },
+                          );
+
+                        case 'Search by Mobile Number':
+                          return CommonTextField.phone(
+                            controller: controller.searchMobileNumberController,
+                            focusNode: controller.searchMobileNumberFocusNode,
+                            hintText: 'Enter Mobile Number',
+                            suffixIcon: const Icon(Icons.search),
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Please enter mobile number';
+                              }
+                              return null;
+                            },
+                          );
+
+                        case 'Search by Name':
+                          return Column(
+                            children: [
+                              CommonTextField(
+                                controller: controller.searchNameController,
+                                focusNode: controller.searchNameFocusNode,
+                                hintText: 'Enter Name',
+                                suffixIcon: const Icon(Icons.search),
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              CommonTextField(
+                                controller: controller.searchCityController,
+                                focusNode: controller.searchCityFocusNode,
+                                hintText: 'Enter City',
+                                suffixIcon: const Icon(Icons.search),
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter city';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          );
+
+                        case 'Search by Company Name':
+                          return Column(
+                            children: [
+                              CommonTextField(
+                                controller:
+                                    controller.searchCompanyNameController,
+                                focusNode:
+                                    controller.searchCompanyNameFocusNode,
+                                hintText: 'Enter Company Name',
+                                suffixIcon: const Icon(Icons.search),
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter company name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              CommonTextField(
+                                controller: controller.searchCityController,
+                                focusNode: controller.searchCityFocusNode,
+                                hintText: 'Enter City',
+                                suffixIcon: const Icon(Icons.search),
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter city';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          );
+
+                        default:
+                          return const SizedBox.shrink();
+                      }
+                    }),
                   ],
-                  hintText: 'Select',
-                  selectedItem: controller.selectedValue.value.isNotEmpty
-                      ? controller.selectedValue.value
-                      : null,
-                  onChanged: (value) {
-                    if (value != null) {
-                      controller.onSearchTypeChanged(value);
-                    }
-                    // 🔥 Clear all validation errors
-                    formKey.currentState?.reset();
-                  },
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Please select search type';
-                    }
-                    return null;
-                  },
                 ),
-
-                SizedBox(height: 20),
-
-                Obx(() {
-                  switch (controller.selectedValue.value) {
-                    case 'Search by GST':
-                      return CommonTextField(
-                        controller: controller.searchGstController,
-                        focusNode: controller.searchGstFocusNode,
-                        hintText: 'Enter GST Number',
-                        suffixIcon: const Icon(Icons.search),
-                        textCapitalization: TextCapitalization.characters,
-                        extraInputFormatters: [UpperCaseTextFormatter()],
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return 'Please enter GST';
-                          }
-                          return null;
-                        },
-                      );
-
-                    case 'Search by Mobile Number':
-                      return CommonTextField.phone(
-                        controller: controller.searchMobileNumberController,
-                        focusNode: controller.searchMobileNumberFocusNode,
-                        hintText: 'Enter Mobile Number',
-                        suffixIcon: const Icon(Icons.search),
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return 'Please enter mobile number';
-                          }
-                          return null;
-                        },
-                      );
-
-                    case 'Search by Name':
-                      return Column(
-                        children: [
-                          CommonTextField(
-                            controller: controller.searchNameController,
-                            focusNode: controller.searchNameFocusNode,
-                            hintText: 'Enter Name',
-                            suffixIcon: const Icon(Icons.search),
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Please enter name';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          CommonTextField(
-                            controller: controller.searchCityController,
-                            focusNode: controller.searchCityFocusNode,
-                            hintText: 'Enter City',
-                            suffixIcon: const Icon(Icons.search),
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Please enter city';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      );
-
-                    case 'Search by Company Name':
-                      return Column(
-                        children: [
-                          CommonTextField(
-                            controller: controller.searchCompanyNameController,
-                            focusNode: controller.searchCompanyNameFocusNode,
-                            hintText: 'Enter Company Name',
-                            suffixIcon: const Icon(Icons.search),
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Please enter company name';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          CommonTextField(
-                            controller: controller.searchCityController,
-                            focusNode: controller.searchCityFocusNode,
-                            hintText: 'Enter City',
-                            suffixIcon: const Icon(Icons.search),
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Please enter city';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      );
-
-                    default:
-                      return const SizedBox.shrink();
-                  }
-                }),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (MediaQuery.of(context).viewInsets.bottom > 0)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () =>
-                        FocusManager.instance.primaryFocus?.unfocus(),
-                    child: const Text('Done'),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: Obx(() {
+                final showDone =
+                    controller.selectedValue.value ==
+                        'Search by Mobile Number' &&
+                    MediaQuery.of(context).viewInsets.bottom > 0;
+
+                if (showDone) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12, bottom: 4),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () =>
+                            FocusManager.instance.primaryFocus?.unfocus(),
+                        child: const Text('Done'),
+                      ),
+                    ),
+                  );
+                }
+
+                return Container(
+                  color: const Color(0xffEFF2FF),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
                   ),
-                ),
-              Obx(() {
-                return CommonButton(
-                  text: "Search",
-                  onPressed: () {
-                    if (formKey.currentState?.validate() != true) {
-                      print('Form is invalid. Please correct the errors.');
-                      return;
-                    }
-                    controller.searchApiCall();
-                  },
-                  isLoading: controller.isLoading.value,
+                  child: CommonButton(
+                    text: "Search",
+                    onPressed: () {
+                      if (formKey.currentState?.validate() != true) {
+                        print('Form is invalid. Please correct the errors.');
+                        return;
+                      }
+                      controller.searchApiCall();
+                    },
+                    isLoading: controller.isLoading.value,
+                  ),
                 );
               }),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
