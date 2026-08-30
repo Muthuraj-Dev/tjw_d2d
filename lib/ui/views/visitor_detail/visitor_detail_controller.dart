@@ -7,8 +7,10 @@ import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dialog.dart';
 import '../../../core/model/searchResponse.dart';
 import '../../../core/res/colors.dart';
+import '../../../locator.dart';
 import '../../../services/api_base_service.dart';
 import '../../../services/request_method.dart';
+import '../../../services/session_service.dart';
 
 class VisitorDetailController extends GetxController {
   final TextEditingController statusController = TextEditingController();
@@ -123,6 +125,14 @@ class VisitorDetailController extends GetxController {
     isLoading.value = true;
 
     try {
+      final session = await locator<SessionService>().getSession();
+
+      if (session == null) {
+        Fluttertoast.showToast(msg: 'Session expired. Please verify OTP again.');
+        return;
+      }
+
+      final int userId = session.userId;
       final int visitorId = visitor.visitorID!;
 
       final String url =
@@ -131,7 +141,8 @@ class VisitorDetailController extends GetxController {
           '&status=${selectedStatus.value}'
           '&PaymentMode='
           '&Amount=0'
-          '&ReferenceID=';
+          '&ReferenceID='
+          '&userId=$userId';
 
       final response = await ApiBaseService.request<Map<String, dynamic>>(
         url,
@@ -222,6 +233,14 @@ class VisitorDetailController extends GetxController {
       _validatePayment();
       isLoading.value = true;
 
+      final session = await locator<SessionService>().getSession();
+
+      if (session == null) {
+        Fluttertoast.showToast(msg: 'Session expired. Please verify OTP again.');
+        return;
+      }
+
+      final int userId = session.userId;
       final int visitorId = visitor.visitorID!;
 
       final String paymentMode = selectedValue.value;
@@ -240,7 +259,8 @@ class VisitorDetailController extends GetxController {
           '&status=${selectedStatus.value}'
           '&PaymentMode=$paymentMode'
           '&Amount=$amount'
-          '&ReferenceID=$referenceId';
+          '&ReferenceID=$referenceId'
+          '&userId=$userId';
 
       final Map<String, dynamic> response =
           await ApiBaseService.request<Map<String, dynamic>>(

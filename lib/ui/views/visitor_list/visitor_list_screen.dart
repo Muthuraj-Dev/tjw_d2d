@@ -85,7 +85,12 @@ class VisitorListScreen extends StatelessWidget {
               }
 
               return ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  0,
+                  16,
+                  MediaQuery.of(context).padding.bottom + 16,
+                ),
                 itemCount: controller.filteredVisitors.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {

@@ -7,8 +7,10 @@ import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dialog.dart';
 import '../../../core/model/searchResponse.dart';
 import '../../../core/res/colors.dart';
+import '../../../locator.dart';
 import '../../../services/api_base_service.dart';
 import '../../../services/request_method.dart';
+import '../../../services/session_service.dart';
 
 class PaymentMethodController extends GetxController {
   RxString selectedValue = "cash".obs;
@@ -32,7 +34,6 @@ class PaymentMethodController extends GetxController {
   late final Data visitor;
   late final int status;
 
-
   @override
   void onInit() {
     super.onInit();
@@ -50,6 +51,14 @@ class PaymentMethodController extends GetxController {
       _validatePayment();
       isLoading.value = true;
 
+      final session = await locator<SessionService>().getSession();
+
+      if (session == null) {
+        Fluttertoast.showToast(msg: 'Session expired. Please verify OTP again.');
+        return;
+      }
+
+      final int userId = session.userId;
       final int visitorId = visitor.visitorID!;
 
       final String paymentMode = selectedValue.value;
@@ -64,16 +73,13 @@ class PaymentMethodController extends GetxController {
       //     ? referenceIdController.text.trim()
       //     : '';
 
-      final String amount =
-      selectedValue.value == 'cash'
+      final String amount = selectedValue.value == 'cash'
           ? cashAmountController.text.trim()
           : upiAmountController.text.trim();
 
-      final String referenceId =
-      selectedValue.value == 'upi'
+      final String referenceId = selectedValue.value == 'upi'
           ? referenceIdController.text.trim()
           : '';
-
 
       final String url =
           'Save'
@@ -81,21 +87,20 @@ class PaymentMethodController extends GetxController {
           '&status=$status'
           '&PaymentMode=$paymentMode'
           '&Amount=$amount'
-          '&ReferenceID=$referenceId';
+          '&ReferenceID=$referenceId'
+          '&userId=$userId';
 
       final Map<String, dynamic> response =
-      await ApiBaseService.request<Map<String, dynamic>>(
-        url,
-        method: RequestMethod.GET,
-        authenticated: false,
-      );
+          await ApiBaseService.request<Map<String, dynamic>>(
+            url,
+            method: RequestMethod.GET,
+            authenticated: false,
+          );
 
       if (response['status'] == "200") {
         final data = response['data'];
 
-        Fluttertoast.showToast(
-          msg: 'Saved successfully',
-        );
+        Fluttertoast.showToast(msg: 'Saved successfully');
 
         // Optional local update
         visitor.status = data['status'];
@@ -183,9 +188,7 @@ class PaymentMethodController extends GetxController {
           ),
         );
 
-
-
-   //     Get.back(result: true);
+        //     Get.back(result: true);
       } else {
         Fluttertoast.showToast(msg: 'Failed to save payment');
       }
@@ -199,7 +202,6 @@ class PaymentMethodController extends GetxController {
       isLoading.value = false;
     }
   }
-
 
   void _validatePayment() {
     if (selectedValue.value == 'cash') {
@@ -217,6 +219,4 @@ class PaymentMethodController extends GetxController {
       }
     }
   }
-
-
 }

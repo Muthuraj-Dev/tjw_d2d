@@ -121,10 +121,17 @@ class OtpController extends GetxController with WidgetsBindingObserver {
       );
 
       if (response['status'] == 200) {
+        final userId = response['data']?['userId'];
+
+        if (userId is! int) {
+          Fluttertoast.showToast(msg: 'OTP verified but user ID was missing. Please try again.');
+          return;
+        }
+
         Fluttertoast.showToast(msg: response['message']);
 
         final session = UserSession(
-          userId: response['data']['userId'],
+          userId: userId,
           mobileNumber: response['data']['mobileNumber'],
           userName: response['data']['userName'],
         );

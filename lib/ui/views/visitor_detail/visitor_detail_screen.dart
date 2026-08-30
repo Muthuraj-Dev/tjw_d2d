@@ -201,43 +201,69 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                         const SizedBox(height: 8),
                         const Divider(color: Color(0xffB4B4B4)),
                         const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CommonDropdown<String>(
-                                items: const [
-                                  'Paid',
-                                  'Complimentary',
-                                  'Unpaid',
-                                  'Rejected',
-                                ],
-                                hintText: 'Select',
-                                selectedItem:
-                                    controller.statusController.text.isNotEmpty
-                                    ? controller.statusController.text
-                                    : null,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    controller.onStatusChanged(value);
-                                  }
-                                },
-                                validator: (val) {
-                                  if (val == null || val.isEmpty) {
-                                    return 'Please select branch';
-                                  }
-                                  return null;
-                                },
+                        Obx(() {
+                          if (controller.selectedStatus.value == 1) {
+                            return Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xffFFF4E5),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            ),
-                          ],
-                        ),
+                              child: Text(
+                                'The status is Paid and is pending for '
+                                'approval by the Admin. Hence, the '
+                                'promoter cannot change the status.',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColor.textPrimary,
+                                ),
+                              ),
+                            );
+                          }
+
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: CommonDropdown<String>(
+                                  items: const [
+                                    'Paid',
+                                    'Complimentary',
+                                    'Unpaid',
+                                    'Rejected',
+                                  ],
+                                  hintText: 'Select',
+                                  selectedItem:
+                                      controller
+                                          .statusController
+                                          .text
+                                          .isNotEmpty
+                                      ? controller.statusController.text
+                                      : null,
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      controller.onStatusChanged(value);
+                                    }
+                                  },
+                                  validator: (val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'Please select branch';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
 
                         // Payment Method Option - Display for only like - PAID / COMPLIMENTARY
                         Obx(() {
                           final status = controller.selectedStatus.value;
 
                           // ❌ Hide for UNPAID / REJECTED
-                          if (status != 3) {  //  && status != 6
+                          if (status != 3) {
+                            //  && status != 6
                             return const SizedBox.shrink();
                           }
 
@@ -277,6 +303,10 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
         ),
       ),
       bottomNavigationBar: Obx(() {
+        if (controller.selectedStatus.value == 1) {
+          return const SizedBox.shrink();
+        }
+
         final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
         return AnimatedPadding(
@@ -382,7 +412,11 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Image.asset("assets/qr_code.jpeg",width: 200,height: 200,),
+                  child: Image.asset(
+                    "assets/qr_code.jpeg",
+                    width: 200,
+                    height: 200,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

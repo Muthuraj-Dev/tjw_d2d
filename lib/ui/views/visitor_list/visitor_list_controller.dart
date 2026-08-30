@@ -56,14 +56,24 @@ class VisitorListController extends GetxController {
 
   String statusLabelFromCode(int status) {
     switch (status) {
-      case 3:
-        return 'Paid';
-      case 6:
-        return 'Complimentary';
       case 0:
         return 'Unpaid';
+      case 1:
+        return 'Paid. Pending for Approval';
       case 2:
         return 'Rejected';
+      case 3:
+        return 'Paid. Approved';
+      case 4:
+        return 'Further Processing';
+      case 5:
+        return 'Complimentary. Pending';
+      case 6:
+        return 'Complimentary. Approved';
+      case 7:
+        return 'Complimentary. Rejected';
+      case 8:
+        return 'Further Processing Complimentary';
       default:
         return '';
     }
@@ -79,6 +89,9 @@ class VisitorListController extends GetxController {
 
       case 0: // Unpaid
         return Colors.orange;
+
+      case 1: // Paid. Pending for Approval
+        return Colors.amber.shade800;
 
       case -1: // Rejected
         return Colors.red;
