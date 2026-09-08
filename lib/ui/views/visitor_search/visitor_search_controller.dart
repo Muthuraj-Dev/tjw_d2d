@@ -3,19 +3,69 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:tjwd2d/core/model/searchResponse.dart';
 
+import '../../../locator.dart';
 import '../../../services/api_base_service.dart';
 import '../../../services/request_method.dart';
+import '../../../services/session_service.dart';
 
-class VisitorSearchController extends GetxController{
+class VisitorSearchController extends GetxController {
+  /// TODO: replace with the real event id once it's available from
+  /// local storage / session; hardcoded for now.
+  static const int _eventId = 23;
 
+  RxInt totalRegistrationCount = 0.obs;
+  var isLoadingRegistrationCount = false.obs;
+
+  RxString userName = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchTotalRegistrationCount();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final session = await locator<SessionService>().getSession();
+    if (session != null) {
+      userName.value = session.userName;
+    }
+  }
+
+  Future<void> fetchTotalRegistrationCount() async {
+    if (isLoadingRegistrationCount.value) return;
+    isLoadingRegistrationCount.value = true;
+
+    try {
+      final session = await locator<SessionService>().getSession();
+      if (session == null) return;
+
+      final response = await ApiBaseService.request<Map<String, dynamic>>(
+        'RegistrationCount?userid=${session.userId}',
+        method: RequestMethod.GET,
+        authenticated: false,
+      );
+
+      if (response['status'] == 200) {
+        totalRegistrationCount.value =
+            int.tryParse(response['data'].toString()) ?? 0;
+      }
+    } catch (e) {
+      // Non-critical stat display; fail silently.
+    } finally {
+      isLoadingRegistrationCount.value = false;
+    }
+  }
 
   final TextEditingController statusController = TextEditingController();
   FocusNode statusFocusNode = FocusNode();
 
   final TextEditingController searchNameController = TextEditingController();
   final TextEditingController searchGstController = TextEditingController();
-  final TextEditingController searchMobileNumberController = TextEditingController();
-  final TextEditingController searchCompanyNameController = TextEditingController();
+  final TextEditingController searchMobileNumberController =
+      TextEditingController();
+  final TextEditingController searchCompanyNameController =
+      TextEditingController();
   final TextEditingController searchCityController = TextEditingController();
 
   FocusNode searchNameFocusNode = FocusNode();
@@ -27,7 +77,6 @@ class VisitorSearchController extends GetxController{
   RxString selectedValue = "".obs;
 
   var isLoading = false.obs;
-
 
   void onSearchTypeChanged(String value) {
     selectedValue.value = value;
@@ -46,7 +95,6 @@ class VisitorSearchController extends GetxController{
   RxInt dataFound = 0.obs;
 
   Future<void> searchApiCall() async {
-
     if (isLoading.value) return;
 
     isLoading.value = true;
@@ -63,17 +111,18 @@ class VisitorSearchController extends GetxController{
           break;
 
         case 'Search by Mobile Number':
-          query = 'VisitorPhoneValue=${searchMobileNumberController.text.trim()}';
+          query =
+              'VisitorPhoneValue=${searchMobileNumberController.text.trim()}';
           break;
 
         case 'Search by Name':
           query =
-          'VisitorNameValue=${searchNameController.text.trim()}&CityValue=${searchCityController.text.trim()}';
+              'VisitorNameValue=${searchNameController.text.trim()}&CityValue=${searchCityController.text.trim()}';
           break;
 
         case 'Search by Company Name':
           query =
-          'CompanyNameValue=${searchCompanyNameController.text.trim()}&CityValue=${searchCityController.text.trim()}';
+              'CompanyNameValue=${searchCompanyNameController.text.trim()}&CityValue=${searchCityController.text.trim()}';
           break;
 
         default:
@@ -82,11 +131,12 @@ class VisitorSearchController extends GetxController{
       }
 
       /// 🔹 API call
-      final SearchResponse response = await ApiBaseService.request<SearchResponse>(
-        'SearchVisitor?$query',
-        method: RequestMethod.GET,
-        authenticated: false,
-      );
+      final SearchResponse response =
+          await ApiBaseService.request<SearchResponse>(
+            'SearchVisitor?$query',
+            method: RequestMethod.GET,
+            authenticated: false,
+          );
 
       if (response.status == "200") {
         final searchResponse = SearchResponse.fromJson(response.toJson());
@@ -105,7 +155,7 @@ class VisitorSearchController extends GetxController{
 
         print("searchParams $searchParams");
 
-        Get.toNamed(
+        await Get.toNamed(
           '/visitorListScreen',
           arguments: {
             'visitors': searchResponse.data ?? [],
@@ -113,15 +163,18 @@ class VisitorSearchController extends GetxController{
           },
         );
 
-    //    Get.toNamed('/visitorListScreen', arguments: searchResponse.data ?? []);
+        /// 🔄 Refresh the registration count whenever the user comes back
+        /// to this screen, in case a status change or new registration
+        /// happened while they were away.
+        fetchTotalRegistrationCount();
+
+        //    Get.toNamed('/visitorListScreen', arguments: searchResponse.data ?? []);
 
         if (response.dataFound == 0) {
           Fluttertoast.showToast(msg: 'No records found');
         }
       } else {
-        Fluttertoast.showToast(
-          msg: 'No data found for Search Parameters.',
-        );
+        Fluttertoast.showToast(msg: 'No data found for Search Parameters.');
       }
     } catch (e) {
       Get.snackbar(

@@ -74,7 +74,81 @@ class _VisitorSearchScreenState extends State<VisitorSearchScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //     SizedBox(height: 78),
+                    Row(
+                      children: [
+                        SvgPicture.asset('assets/user.svg'),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Welcome", style: TextStyle(fontSize: 16)),
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Obx(
+                                  () => Text(
+                                    controller.userName.value.isNotEmpty
+                                        ? controller.userName.value
+                                        : '-',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: -4,
+                                  right: -14,
+                                  child: SvgPicture.asset(
+                                    'assets/verify_tick.svg',
+                                    width: 12,
+                                    height: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(20),
+
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Total Registration",
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Obx(
+                                () => Text(
+                                  _formatCount(
+                                    controller.totalRegistrationCount.value,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    color: Color(0XFF174F97),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SvgPicture.asset('assets/user_verify.svg'),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
                     Text(
                       "Search For Visitor",
                       style: TextStyle(
@@ -283,6 +357,13 @@ class _VisitorSearchScreenState extends State<VisitorSearchScreen> {
         },
         title: Text(label),
       ),
+    );
+  }
+
+  String _formatCount(int count) {
+    return count.toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]},',
     );
   }
 }
